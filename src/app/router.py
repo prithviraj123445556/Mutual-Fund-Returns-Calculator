@@ -25,6 +25,9 @@ async def calculate_mutual_fund_profit(
     end_date: str = Query(..., description="The redemption date of the mutual fund."),
     capital: Optional[float] = Query(1000000.0, description="The initial investment amount.")
 ):
+     """
+    Calculates mutual fund net profit.
+    """
     if not verify_credentials(credentials):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -59,4 +62,7 @@ async def calculate_mutual_fund_profit(
 
 @router.get("/")
 async def read_index():
+     """
+    Serves index.html file.
+    """
     return FileResponse("templates/index.html")
