@@ -11,7 +11,6 @@ def get_nav_from_api(scheme_code, date):
     try:
         load_dotenv()
         api_url = os.getenv("API_URL")
-        print(api_url)
         full_api_url = f"{api_url}/{scheme_code}"
         response = requests.get(full_api_url)
         
