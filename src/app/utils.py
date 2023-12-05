@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 
 
 def get_nav_from_api(scheme_code, date):
+    """
+    Fetches NAV (Net Asset Value) from an API for a given scheme code and date.
+    """
     try:
         load_dotenv()
         api_url = os.getenv("API_URL")
@@ -38,6 +41,9 @@ def get_nav_from_api(scheme_code, date):
     
 
 def calculate_profit(scheme_code, start_date, end_date, capital=1000000.0):
+    """
+    Calculates the net profit of a mutual fund investment.
+    """
     try:
         try:
             start_date = datetime.strptime(start_date, '%d-%m-%Y')
@@ -85,6 +91,9 @@ def calculate_profit(scheme_code, start_date, end_date, capital=1000000.0):
     
 
 def verify_credentials(credentials: HTTPBasicCredentials):
+    """
+    Verifies user credentials.
+    """
     load_dotenv()
     username = os.getenv("USERID")
     password = os.getenv("PASSWORD")
