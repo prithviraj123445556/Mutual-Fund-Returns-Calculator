@@ -97,8 +97,7 @@ def verify_credentials(credentials: HTTPBasicCredentials):
     load_dotenv()
     username = os.getenv("USERID")
     password = os.getenv("PASSWORD")
-    print(username,password)
-    print(credentials.username,credentials.password)
+
     if credentials.username == username and credentials.password == password:
         return True
     return False
