@@ -9,6 +9,8 @@ import os
 client = TestClient(app)
 pytest_plugins = ["dotenv"]
 
+
+# Generates authorization headers using environment variables
 def get_auth_headers():
     username = os.getenv("USERID")
     password = os.getenv("PASSWORD")
@@ -16,6 +18,8 @@ def get_auth_headers():
     encoded_credentials = base64.b64encode(credentials.encode()).decode()
     return {"Authorization": f"Basic {encoded_credentials}"}
 
+
+# Tests a valid calculation of mutual fund profit
 def test_calculate_mutual_fund_profit():
     headers = get_auth_headers()
 
@@ -34,12 +38,16 @@ def test_calculate_mutual_fund_profit():
     response_json = response.json()
     assert response_json["net_profit"]
 
+
+# Tests when input is invalid, expects status code 422
 def test_invalid_input():
     headers = get_auth_headers()
 
     response = client.get("/profit", headers=headers)
     assert response.status_code == 422
 
+
+# Tests scenario where scheme code is not found, expects status code 404
 def test_scheme_code_not_found():
     headers = get_auth_headers()
 
@@ -57,6 +65,8 @@ def test_scheme_code_not_found():
     response_json = response.json()
     assert response_json["detail"] == "Scheme code not found"
 
+
+# Tests scenario where an invalid date format is provided, expects status code 400
 def test_invalid_date_exception():
     headers = get_auth_headers()
 
