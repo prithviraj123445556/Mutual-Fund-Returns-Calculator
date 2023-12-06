@@ -1,13 +1,12 @@
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, HTTPException, Query, Depends, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from typing import Optional
-from fastapi.responses import JSONResponse
-from fastapi import Response, status
-from src.app.utils import calculate_profit ,verify_credentials
+from fastapi.responses import JSONResponse, FileResponse
+from src.app.utils import calculate_profit, verify_credentials
 from src.app.schemas import ErrorBase, NetProfitResponse
 from src.app.exceptions import SchemeCodeNotFound, InvalidDate, InvalidCapitalAmount
 from src.app.logger import logger
-from fastapi.responses import FileResponse
+from typing import Optional
+
 
 
 router = APIRouter()
@@ -25,21 +24,22 @@ async def calculate_mutual_fund_profit(
     end_date: str = Query(..., description="The redemption date of the mutual fund."),
     capital: Optional[float] = Query(1000000.0, description="The initial investment amount.")
 ):
-     """
+    """
     Calculates mutual fund net profit.
     """
-    if not verify_credentials(credentials):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-            headers={"WWW-Authenticate": "Basic"},
-        )
     try:
+        if not verify_credentials(credentials):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid credentials",
+                headers={"WWW-Authenticate": "Basic"},
+            )
+        
         scheme_code = scheme_code.strip()
         start_date = start_date.strip()
         end_date = end_date.strip()
 
-        net_profit = calculate_profit(scheme_code, start_date, end_date, capital)  
+        net_profit = calculate_profit(scheme_code, start_date, end_date, capital)
         return NetProfitResponse(net_profit=net_profit) 
 
     except SchemeCodeNotFound as e:
@@ -55,14 +55,14 @@ async def calculate_mutual_fund_profit(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     except Exception as e:
-        error_response = ErrorBase(error=str(e))
+        logger.error(f"Internal Server Error: {e}")
+        error_response = ErrorBase(error="Internal Server Error")
         return JSONResponse(error_response.dict(), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
 
 
 @router.get("/")
 async def read_index():
-     """
+    """
     Serves index.html file.
     """
     return FileResponse("templates/index.html")
